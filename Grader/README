@@ -1,0 +1,17 @@
+matlab -batch "resultado = src(5); disp(resultado)" 
+
+
+#puedes quitar el disp(), si lo añades dentro de la función
+
+----------------------
+
+function Lmillas = convKM2millas(Lkm)
+    % Insertar el codigo
+    factorConversion = 0.621371;
+    Lmillas = Lkm * factorConversion;
+end
+
+ matlab -batch "Lkm = [42, 180, 212]; Lmillas = src(Lkm); disp(Lmillas)" 
+
+ ----------------------
+ cmd + shif + 7
