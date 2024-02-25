@@ -6,4 +6,4 @@ function Lmillas = convKM2millas(Lkm)
 end
 
 %% Comand to use is: 
-% matlab -batch "Lkm = [42, 180, 212]; Lmillas = src(Lkm); disp(Lmillas)" 
+% matlab -batch "Lkm = [42, 180, 212]; Lmillas = convKM2millas(Lkm); disp(Lmillas)" 
