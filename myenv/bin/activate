@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/Python/UniversityProjects/TDS/myenv"
+VIRTUAL_ENV="/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_python/myenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
