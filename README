@@ -41,3 +41,25 @@ Para subir un proyecto ya inicializado con Git a GitHub, necesitas seguir una se
 - **`git merge nombre-de-la-rama`**: Fusiona los cambios de la rama especificada a la rama actual.
 
 Estos comandos forman la base para la mayoría de las operaciones que realizarás con Git y GitHub en tu proyecto.
+-----------------------------------------------------------
+Para crear un archivo requirements.txt con todas las bibliotecas que tu proyecto Python necesita, primero debes tener un entorno virtual activo donde hayas instalado todas las bibliotecas necesarias. Luego, puedes usar el comando pip freeze para generar el archivo requirements.txt. Aquí están los pasos en pseudocódigo:
+
+Asegúrate de que tu entorno virtual está activo.
+Ejecuta el comando pip freeze > requirements.txt en la terminal.
+Aquí está el comando en un bloque de código:
+
+'pip freeze > requirements.txt'
+
+Este comando creará un archivo requirements.txt en tu directorio actual con todas las bibliotecas instaladas en tu entorno virtual.
+
+
+-----------------------------------------------------------
+Si tienes un archivo requirements.txt y necesitas instalar todas las bibliotecas listadas en él, puedes hacerlo utilizando el comando pip install -r. Aquí están los pasos en pseudocódigo:
+
+Asegúrate de que tu entorno virtual está activo.
+Ejecuta el comando pip install -r requirements.txt en la terminal.
+Aquí está el comando en un bloque de código:
+
+'pip install -r requirements.txt'
+
+Este comando instalará todas las bibliotecas listadas en tu archivo requirements.txt en tu entorno virtual.
