@@ -6,7 +6,7 @@ function y = diezmador(x, M)
     %Salidas:
     % y, senyal diezmada
         
-    x = x(:)'; % Así nos aseguramos de que la entrada siempre sea un vector columna
+    x = x(:); % Así nos aseguramos de que la entrada siempre sea un vector columna
     
     %Inserte su codigo a partir de aqui
     
