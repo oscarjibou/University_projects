@@ -1,2 +1,43 @@
 alalbiol.tds@gmail.com
 Thursday before 9:00
+
+-----------------------
+Para que no se me olvide:
+Para subir un proyecto ya inicializado con Git a GitHub, necesitas seguir una serie de pasos que te permitirán conectar tu repositorio local con un repositorio remoto en GitHub. Aquí te dejo los comandos esenciales para realizar esta tarea:
+
+1. **Crea un nuevo repositorio en GitHub**: Ve a [GitHub](https://github.com/) y crea un nuevo repositorio. Durante la creación, GitHub te ofrecerá la opción de inicializar el repositorio con un README, .gitignore, y una licencia. Como tu proyecto ya está inicializado y probablemente ya tenga contenido, no necesitas seleccionar estas opciones. Solo dale un nombre a tu repositorio y créalo.
+
+2. **Abre tu terminal y navega a tu proyecto local**: Si aún no estás en el directorio de tu proyecto, usa el comando `cd` para navegar a él.
+
+   ```bash
+   cd ruta/a/tu/proyecto
+   ```
+
+3. **Vincula tu repositorio local con el repositorio remoto en GitHub**: Utiliza el comando `git remote add` para agregar un nuevo remoto. Deberás reemplazar `url-del-repositorio` con la URL que te proporciona GitHub para tu nuevo repositorio. Esta URL la encontrarás en la página de tu repositorio en GitHub, bajo las instrucciones para "push an existing repository from the command line".
+
+   ```bash
+   git remote add origin url-del-repositorio
+   ```
+
+4. **Sube tu proyecto al repositorio en GitHub**: Primero, asegúrate de haber añadido y confirmado todos tus cambios locales usando `git add` y `git commit`. Luego, utiliza `git push` para subir tu proyecto al repositorio de GitHub.
+
+   ```bash
+   git push -u origin master
+   ```
+
+   Nota: Si estás utilizando la nomenclatura de ramas principal como `main` en lugar de `master` (GitHub cambió el nombre predeterminado de la rama principal a `main` en repositorios nuevos), asegúrate de usar `main` en el comando anterior.
+
+**Comandos esenciales de Git para manejar tu proyecto:**
+
+- **`git init`**: Inicializa un nuevo repositorio de Git local.
+- **`git status`**: Muestra el estado del repositorio local, incluyendo cambios que no han sido confirmados.
+- **`git add .`** o **`git add nombre-del-archivo`**: Añade archivos al área de preparación para ser confirmados. Usar `.` añade todos los archivos modificados.
+- **`git commit -m "mensaje del commit"`**: Confirma los cambios añadidos al área de preparación con un mensaje descriptivo.
+- **`git push`**: Sube los cambios confirmados al repositorio remoto.
+- **`git pull`**: Descarga los cambios más recientes del repositorio remoto y los integra con el repositorio local.
+- **`git clone url-del-repositorio`**: Clona un repositorio remoto en tu máquina local.
+- **`git branch`**: Lista las ramas locales en tu repositorio. Con opciones adicionales, puedes crear o eliminar ramas.
+- **`git checkout nombre-de-la-rama`**: Cambia a otra rama existente en tu repositorio.
+- **`git merge nombre-de-la-rama`**: Fusiona los cambios de la rama especificada a la rama actual.
+
+Estos comandos forman la base para la mayoría de las operaciones que realizarás con Git y GitHub en tu proyecto.
