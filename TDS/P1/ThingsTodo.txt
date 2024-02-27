@@ -1,0 +1,6 @@
+* apartado 2: 
+    ¿Cuáles tienen estructura periódica? A partir de lo que ves, estima cuál es el periodo fundamental
+    de las que son periódicas, T, y calcula su frecuencia fundamental, f0, como el inverso de T.
+
+    Tengo mal la energía y potencia 
+    
