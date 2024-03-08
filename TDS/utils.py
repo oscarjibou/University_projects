@@ -17,6 +17,6 @@ def discrete_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
     plt.figure(figsize=(10, 5))
     plt.stem(*args)
     plt.title("Señal en el dominio del tiempo discreto")
-    plt.xlabel("Tiempo [s]")
+    plt.xlabel("Muestras [n]")
     plt.ylabel("Amplitud")
     plt.show()
