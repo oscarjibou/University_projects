@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from numpy.typing import ArrayLike
 
+
 def continuous_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
 
     plt.figure(figsize=(10, 5))
