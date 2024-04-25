@@ -158,46 +158,6 @@ def number_count_detector(
 
     return voice
 
-
-def m4a_to_wav(m4a_file, wav_file):
-    """
-    Convert an m4a file to a wav file
-
-    Args:
-    m4a_file (str): The path to the m4a file
-    wav_file (str): The path to save the wav file
-    """
-
-    sound = pydub.AudioSegment.from_file(m4a_file)
-    sound.export(wav_file, format="wav")
-
-    # Read the audio file
-    freq, audio_data = wavfile.read(wav_file)
-    print(f"Audio frequency: {freq}Hz")
-
-    # Now we will make the audio Mono
-    if audio_data.ndim > 1:
-        audio_data = audio_data.mean(axis=1)
-        print("Audio is stereo, converting to mono")
-
-    audio_data = audio_data / 2**15 # Normalizing the audio data
-
-    # Normalization (if your audio data is in integers and needs to be normalized)
-    # audio_data = audio_data / np.max(np.abs(audio_data))
-
-    # Changing the audio frequency to 16kHz if necesary
-    # Target frequency
-    target_freq = 16000
-
-    if freq != 16000:
-        print(f"Resampling audio from {freq}Hz to {target_freq}Hz")
-        # Calculate new length of the sample
-        new_length = round(len(audio_data) * target_freq / freq)
-
-        # Resample the audio to the target frequency
-        audio_data = signal.resample(audio_data, new_length)
-    return audio_data, freq, target_freq
-
 def export_numbers(signal, sample_rate, voice, count, output_path):
     """
     Exports the detected numbers in the signal to individual wav files
@@ -221,3 +181,27 @@ def export_numbers(signal, sample_rate, voice, count, output_path):
         start, end = voice_segments[i], voice_segments[i + 1]
         write(f"{output_path}{i//2}.wav", sample_rate, signal[start:end])
 
+#function to convert m4p to wav
+"""
+Convert the audio to mono,
+And normalize the audio, 
+change the frecuency to 16kHz if it is different
+"""
+def convert_m4p_to_wav(input_path, output_path):
+    audio = pydub.AudioSegment.from_file(input_path)
+    audio = audio.set_channels(1)
+    audio = audio.set_frame_rate(16000)
+    audio = audio.set_sample_width(2)
+    audio = audio.set_frame_width(2)
+    audio = audio.normalize()
+    audio.export(output_path, format="wav")
+    
+def read_wav_file(file_path):
+    sample_rate, signal = wavfile.read(file_path)
+    return signal, sample_rate
+
+
+# m4a_path = f"/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/P4/oscar.m4a"
+# wav_path = f"/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/P4/oscar.wav"
+
+# convert_m4p_to_wav(m4a_path, wav_path)
