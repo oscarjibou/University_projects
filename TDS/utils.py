@@ -92,8 +92,7 @@ def number_count_detector(
     window_overlap (float): The overlap between consecutive windows in seconds
     count (int): The number of numbers to detect
     margin (float): The safety margin of seconds to add to the detected voice
-
-
+    
     Returns:
     np.array: A binary array indicating the presence of voice
     """
@@ -188,8 +187,8 @@ And normalize the audio,
 change the frecuency to 16kHz if it is different
 """
 def convert_m4p_to_wav(input_path, output_path):
-    audio = pydub.AudioSegment.from_file(input_path)
-    audio = audio.set_channels(1)
+    audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
+    audio = audio.set_channels(1) # Convert to mono
     audio = audio.set_frame_rate(16000)
     audio = audio.set_sample_width(2)
     audio = audio.set_frame_width(2)
