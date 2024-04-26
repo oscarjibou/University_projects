@@ -187,6 +187,7 @@ And normalize the audio,
 change the frecuency to 16kHz if it is different
 """
 def convert_m4p_to_wav(input_path, output_path):
+    print(input_path)
     audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
     audio = audio.set_channels(1) # Convert to mono
     audio = audio.set_frame_rate(16000)
@@ -198,9 +199,3 @@ def convert_m4p_to_wav(input_path, output_path):
 def read_wav_file(file_path):
     sample_rate, signal = wavfile.read(file_path)
     return signal, sample_rate
-
-
-# m4a_path = f"/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/P4/oscar.m4a"
-# wav_path = f"/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/P4/oscar.wav"
-
-# convert_m4p_to_wav(m4a_path, wav_path)
