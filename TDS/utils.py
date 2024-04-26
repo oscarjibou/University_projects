@@ -3,7 +3,7 @@ from numpy.typing import ArrayLike
 import numpy as np
 from scipy.signal import get_window
 from scipy.io import wavfile
-import pydub
+# import pydub
 import scipy.signal as signal
 from scipy.io.wavfile import write, read
 
@@ -27,13 +27,21 @@ def discrete_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
     plt.show()
 
 #fuction to cut the signal in 32ms frames
+# def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032):
+#     frames_signal = []
+#     for i in range(0, len(señal), int(frecuencia_señal * tiempo_frames)):
+#         frames_signal.append(señal[i:i + int(frecuencia_señal * tiempo_frames)]) 
+#     return frames_signal   
+
 def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032):
     frames_signal = []
-    for i in range(0, len(señal), int(frecuencia_señal * tiempo_frames)):
-        frames_signal.append(señal[i:i + int(frecuencia_señal * tiempo_frames)]) 
-    return frames_signal   
+    frame_size = int(frecuencia_señal * tiempo_frames)
+    for i in range(0, len(señal), frame_size):
+        # Convertir cada frame a lista antes de añadirlo
+        frames_signal.append(list(señal[i:i + frame_size]))
+    return frames_signal
 
-def plot_signal_with_frames(señal_in_frames, frecuencia_señal, tiempo_señal, tiempo_frames=0.032):
+def plot_signal_with_frames_time(señal_in_frames, frecuencia_señal, tiempo_señal, tiempo_frames=0.032):
     plt.figure(figsize=(10, 5))
     for i, frame in enumerate(señal_in_frames):
         plt.plot(tiempo_señal[i * int(tiempo_frames * frecuencia_señal): (i+1) * int(tiempo_frames * frecuencia_señal)], frame)
@@ -41,6 +49,7 @@ def plot_signal_with_frames(señal_in_frames, frecuencia_señal, tiempo_señal, 
     plt.xlabel("Time [s]")
     plt.ylabel("Amplitude")
     return plt.show()
+
 
 def split_signal_into_frames(
     signal, sample_rate, window_size, window_overlap, window_type="hann"
@@ -50,7 +59,7 @@ def split_signal_into_frames(
     Args:
     signal (np.array): The input signal
     sample_rate (int): The sample rate of the signal
-    window_size (float): The size of the window in seconds
+    window_size (float): The size of the window in SECONDS
     window_overlap (float): The overlap between consecutive windows in seconds
     window_type (str): The type of window to use
 
@@ -186,16 +195,16 @@ Convert the audio to mono,
 And normalize the audio, 
 change the frecuency to 16kHz if it is different
 """
-def convert_m4p_to_wav(input_path, output_path):
-    print(input_path)
-    audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
-    audio = audio.set_channels(1) # Convert to mono
-    audio = audio.set_frame_rate(16000)
-    audio = audio.set_sample_width(2)
-    audio = audio.set_frame_width(2)
-    audio = audio.normalize()
-    audio.export(output_path, format="wav")
+# def convert_m4p_to_wav(input_path, output_path):
+#     print(input_path)
+#     audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
+#     audio = audio.set_channels(1) # Convert to mono
+#     audio = audio.set_frame_rate(16000)
+#     audio = audio.set_sample_width(2)
+#     audio = audio.set_frame_width(2)
+#     audio = audio.normalize()
+#     audio.export(output_path, format="wav")
     
-def read_wav_file(file_path):
-    sample_rate, signal = wavfile.read(file_path)
-    return signal, sample_rate
+# def read_wav_file(file_path):
+#     sample_rate, signal = wavfile.read(file_path)
+#     return signal, sample_rate
