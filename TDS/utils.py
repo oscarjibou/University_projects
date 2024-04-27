@@ -3,7 +3,7 @@ from numpy.typing import ArrayLike
 import numpy as np
 from scipy.signal import get_window
 from scipy.io import wavfile
-import pydub
+# import pydub
 import scipy.signal as signal
 from scipy.io.wavfile import write, read
 
@@ -27,13 +27,30 @@ def discrete_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
     plt.show()
 
 #fuction to cut the signal in 32ms frames
-def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032):
-    frames_signal = []
-    for i in range(0, len(señal), int(frecuencia_señal * tiempo_frames)):
-        frames_signal.append(señal[i:i + int(frecuencia_señal * tiempo_frames)]) 
-    return frames_signal   
+# def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032):
+#     frames_signal = []
+#     for i in range(0, len(señal), int(frecuencia_señal * tiempo_frames)):
+#         frames_signal.append(señal[i:i + int(frecuencia_señal * tiempo_frames)]) 
+#     return frames_signal   
 
-def plot_signal_with_frames(señal_in_frames, frecuencia_señal, tiempo_señal, tiempo_frames=0.032):
+def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032, overlap=0):
+    frames_signal = []
+    frame_size = int(frecuencia_señal * tiempo_frames)
+    step_size = int(frame_size * (1 - overlap))
+    
+    # for i in range(0, len(señal), frame_size):
+    #     # Convertir cada frame a lista antes de añadirlo
+    #     frames_signal.append(list(señal[i:i + frame_size]))
+    # return frames_signal
+    
+    for i in range(0, len(señal) - frame_size + 1, step_size):
+    # Convertir cada frame a lista antes de añadirlo
+        frames_signal.append(list(señal[i:i + frame_size]))
+
+    return frames_signal
+    
+
+def plot_signal_with_frames_time(señal_in_frames, frecuencia_señal, tiempo_señal, tiempo_frames=0.032):
     plt.figure(figsize=(10, 5))
     for i, frame in enumerate(señal_in_frames):
         plt.plot(tiempo_señal[i * int(tiempo_frames * frecuencia_señal): (i+1) * int(tiempo_frames * frecuencia_señal)], frame)
@@ -41,6 +58,7 @@ def plot_signal_with_frames(señal_in_frames, frecuencia_señal, tiempo_señal, 
     plt.xlabel("Time [s]")
     plt.ylabel("Amplitude")
     return plt.show()
+
 
 def split_signal_into_frames(
     signal, sample_rate, window_size, window_overlap, window_type="hann"
@@ -50,7 +68,7 @@ def split_signal_into_frames(
     Args:
     signal (np.array): The input signal
     sample_rate (int): The sample rate of the signal
-    window_size (float): The size of the window in seconds
+    window_size (float): The size of the window in SECONDS
     window_overlap (float): The overlap between consecutive windows in seconds
     window_type (str): The type of window to use
 
@@ -92,8 +110,7 @@ def number_count_detector(
     window_overlap (float): The overlap between consecutive windows in seconds
     count (int): The number of numbers to detect
     margin (float): The safety margin of seconds to add to the detected voice
-
-
+    
     Returns:
     np.array: A binary array indicating the presence of voice
     """
@@ -158,46 +175,6 @@ def number_count_detector(
 
     return voice
 
-
-def m4a_to_wav(m4a_file, wav_file):
-    """
-    Convert an m4a file to a wav file
-
-    Args:
-    m4a_file (str): The path to the m4a file
-    wav_file (str): The path to save the wav file
-    """
-
-    sound = pydub.AudioSegment.from_file(m4a_file)
-    sound.export(wav_file, format="wav")
-
-    # Read the audio file
-    freq, audio_data = wavfile.read(wav_file)
-    print(f"Audio frequency: {freq}Hz")
-
-    # Now we will make the audio Mono
-    if audio_data.ndim > 1:
-        audio_data = audio_data.mean(axis=1)
-        print("Audio is stereo, converting to mono")
-
-    audio_data = audio_data / 2**15 # Normalizing the audio data
-
-    # Normalization (if your audio data is in integers and needs to be normalized)
-    # audio_data = audio_data / np.max(np.abs(audio_data))
-
-    # Changing the audio frequency to 16kHz if necesary
-    # Target frequency
-    target_freq = 16000
-
-    if freq != 16000:
-        print(f"Resampling audio from {freq}Hz to {target_freq}Hz")
-        # Calculate new length of the sample
-        new_length = round(len(audio_data) * target_freq / freq)
-
-        # Resample the audio to the target frequency
-        audio_data = signal.resample(audio_data, new_length)
-    return audio_data, freq, target_freq
-
 def export_numbers(signal, sample_rate, voice, count, output_path):
     """
     Exports the detected numbers in the signal to individual wav files
@@ -221,3 +198,22 @@ def export_numbers(signal, sample_rate, voice, count, output_path):
         start, end = voice_segments[i], voice_segments[i + 1]
         write(f"{output_path}{i//2}.wav", sample_rate, signal[start:end])
 
+#function to convert m4p to wav
+"""
+Convert the audio to mono,
+And normalize the audio, 
+change the frecuency to 16kHz if it is different
+"""
+# def convert_m4p_to_wav(input_path, output_path):
+#     print(input_path)
+#     audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
+#     audio = audio.set_channels(1) # Convert to mono
+#     audio = audio.set_frame_rate(16000)
+#     audio = audio.set_sample_width(2)
+#     audio = audio.set_frame_width(2)
+#     audio = audio.normalize()
+#     audio.export(output_path, format="wav")
+    
+# def read_wav_file(file_path):
+#     sample_rate, signal = wavfile.read(file_path)
+#     return signal, sample_rate
