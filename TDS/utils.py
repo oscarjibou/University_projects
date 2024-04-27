@@ -3,10 +3,11 @@ from numpy.typing import ArrayLike
 import numpy as np
 from scipy.signal import get_window
 from scipy.io import wavfile
-# import pydub
 import scipy.signal as signal
+import sys
 from scipy.io.wavfile import write, read
 
+epsilon = sys.float_info.epsilon
 
 def continuous_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
 
@@ -217,3 +218,70 @@ change the frecuency to 16kHz if it is different
 # def read_wav_file(file_path):
 #     sample_rate, signal = wavfile.read(file_path)
 #     return signal, sample_rate
+
+'''
+github link: https://github.com/tyiannak/pyAudioAnalysis/blob/master/pyAudioAnalysis/ShortTermFeatures.py
+
+functions: spectral_centroid_spread, spectral_flux
+'''
+
+def spectral_centroid_spread(fft_magnitude, sampling_rate):
+    """
+    Computes spectral centroid of frame (given abs(FFT)) and spread of the frame.
+    It provides an idea of where the "brightness" or "density" of a sound signal is concentrated. 
+    It indicates the "center of gravity" of the frequency spectrum of a signal
+    
+    ARGUMENTS:
+        fft_magnitude:            abs(FFT) of the signal
+        sampling_rate:            the sampling freq (needed to obtain the frequency vector)
+        
+    RETURNS:    
+        a tuple (centroid, spread)
+        centroid:    spectral centroid
+        spread:        spectral spread
+    """
+    ind = (np.arange(1, len(fft_magnitude) + 1)) * \
+          (sampling_rate / (2.0 * len(fft_magnitude)))
+
+    Xt = fft_magnitude.copy()
+    Xt_max = Xt.max()
+    if Xt_max == 0:
+        Xt = Xt / epsilon
+    else:
+        Xt = Xt / Xt_max
+
+    NUM = np.sum(ind * Xt)
+    DEN = np.sum(Xt) + epsilon
+
+    # Centroid:
+    centroid = (NUM / DEN)
+
+    # Spread:
+    spread = np.sqrt(np.sum(((ind - centroid) ** 2) * Xt) / DEN)
+
+    # Normalize:
+    centroid = centroid / (sampling_rate / 2.0)
+    spread = spread / (sampling_rate / 2.0)
+
+    return centroid, spread
+
+def spectral_flux(fft_magnitude, previous_fft_magnitude):
+    """
+    Measures the amount of change in the power spectrum of a signal from one frame to another
+    Must to use frame by frame (not in the whole signal)
+    ARGUMENTS:
+        fft_magnitude:            the abs(fft) of the current frame
+        previous_fft_magnitude:        the abs(fft) of the previous frame
+    """
+    '''
+    
+    '''
+    # compute the spectral flux as the sum of square distances:
+    fft_sum = np.sum(fft_magnitude + epsilon)
+    previous_fft_sum = np.sum(previous_fft_magnitude + epsilon)
+    sp_flux = np.sum(
+        (fft_magnitude / fft_sum - previous_fft_magnitude /
+         previous_fft_sum) ** 2)
+
+    return sp_flux
+
