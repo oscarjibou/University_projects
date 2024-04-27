@@ -33,13 +33,22 @@ def discrete_time_plot(*args: ArrayLike, variable_name: str, xlabel="Time (s)"):
 #         frames_signal.append(señal[i:i + int(frecuencia_señal * tiempo_frames)]) 
 #     return frames_signal   
 
-def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032):
+def cut_signal_frames(señal, frecuencia_señal, tiempo_frames=0.032, overlap=0):
     frames_signal = []
     frame_size = int(frecuencia_señal * tiempo_frames)
-    for i in range(0, len(señal), frame_size):
-        # Convertir cada frame a lista antes de añadirlo
+    step_size = int(frame_size * (1 - overlap))
+    
+    # for i in range(0, len(señal), frame_size):
+    #     # Convertir cada frame a lista antes de añadirlo
+    #     frames_signal.append(list(señal[i:i + frame_size]))
+    # return frames_signal
+    
+    for i in range(0, len(señal) - frame_size + 1, step_size):
+    # Convertir cada frame a lista antes de añadirlo
         frames_signal.append(list(señal[i:i + frame_size]))
+
     return frames_signal
+    
 
 def plot_signal_with_frames_time(señal_in_frames, frecuencia_señal, tiempo_señal, tiempo_frames=0.032):
     plt.figure(figsize=(10, 5))
