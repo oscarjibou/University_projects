@@ -72,9 +72,3 @@ plt.show()
 frecuency_audio2, audio_raw2 = wavfile.read("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios/0.wav") # freqcuency_audio = 44100    
 
 print(frecuency_audio2)
-
-
-
-
-
-
