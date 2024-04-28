@@ -5,75 +5,91 @@ import numpy as np
 import sounddevice as sd
 import scipy.signal as signal
 import librosa
+import simpleaudio as sa
 
-sys.path.append("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS"
-                )
+sys.path.append("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS")
 
+
+from vad import EnergyVAD
 from scipy.io import wavfile
-from utils import split_signal_into_frames, cut_signal_frames, cut_signal_frames2
+from scipy.io.wavfile import write
 
-'''
-- Extract the audio signal from the wav file and plot it
-- normalize and convert the audio signal to mono
-- trim the audio signal
-- split the singnal and plot ir 
-'''
+from utils import cut_signal_frames
 
-frequency_audio, audio = wavfile.read("P4/nine.wav")
+path = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios/"
 
-tiempo_señal = 1/frequency_audio * np.arange(len(audio))
+frecuency_audio, audio_raw = wavfile.read(path + "prueba2.wav") # freqcuency_audio = 44100
 
-audio = audio / np.max(np.abs(audio))
+#convert the audio signal to mono
+if len(audio_raw.shape) > 1:
+    audio_data = audio_raw[:, 0]
+        
+#normalize the audio signal and apply a gain of 0.8
+audio_raw = audio_raw / np.max(np.abs(audio_raw))
 
-yt, index = librosa.effects.trim(
-    audio, top_db=20, frame_length=2048, hop_length=512)
+ganancia = 0.8  
+audio_raw *= ganancia
 
-audio = audio[index[0]:index[1]] # convert to mono
+#reseample the audio signal to 16000 Hz
+audio_raw = signal.resample(audio_raw, int(len(audio_raw) * 16000 / frecuency_audio))
 
-audio_frames = split_signal_into_frames(audio, frequency_audio,0.32, 0)
-audio_frames2 = cut_signal_frames(audio, frequency_audio, 0.32)
-audio_frames3 = cut_signal_frames2(audio, frequency_audio, 0.32)
+#trim the audio signal
+audio, index = librosa.effects.trim(
+    audio_raw, top_db=20, frame_length=2048, hop_length=512)
 
-#which is the shape of audio_frames3
-print(tiempo_señal.shape)
-print(np.shape(audio_frames3))
+#add silence 0.5s
+silence = np.zeros(int(0.5 * 16000))
+audio = np.concatenate((silence, audio, silence)) 
 
-new_time = np.arange(0, len(audio)/2, 1)
+#find if the audio is above 0.97 amplitude
+print("Maximum amplitude:", np.max(np.abs(audio)))
 
-print(new_time.shape)
-print(np.shape(audio_frames3))
+#pick the first 10 numbers from the audio signal
+vad = EnergyVAD(16000,frame_length=60,frame_shift=32, energy_threshold=0.015) 
 
+voice_activity = vad(audio)
 
-# print(audio_frames)
-# print(audio_frames2)
-# print(audio_frames3)
+audio_frames = cut_signal_frames(audio, 16000, tiempo_frames=0.032, overlap=0)
+samples = cut_signal_frames([i for i in range(len(audio))], 16000, tiempo_frames=0.032, overlap=0)
 
-#print(tiempo_señal)
+for i in range(len(voice_activity)):
+    if voice_activity[i] == 1:
+        audio_frames[i] = audio_frames[i]
+        samples[i] = samples[i]
+    else:
+        audio_frames[i] = np.zeros(np.shape(audio_frames[i]))
+        samples[i] = np.zeros(np.shape(samples[i]))
+numbers = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"]
 
+def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_count=10, margin=2):
+    index_number = 0
+    detectado = False
+    inicio, final = 0, 0
 
-#plot audio_frames3
-# plt.figure(figsize=(10, 5))
-# plt.plot(new_time, audio_frames3[0])
-# plt.title(f"Frames of 32ms")
-# plt.xlabel("Time [s]")
-# plt.ylabel("Amplitude")
-# plt.show()
+    for i in range(len(voice_activity)):
+        if detectado:
+            if voice_activity[i] == 1:
+                final = i
+            elif voice_activity[i] == 0:
+                detectado = False
+                if index_number <= (numbers_count - 1) :
+                    file_path = f"{path_base}/{numbers[index_number]}.wav"
+                    write(file_path, 16000, np.concatenate(audio_frames[inicio:final]))
+                    index_number += 1
+                else:
+                    break
+        elif voice_activity[i] == 1:
+            inicio = i - margin
+            detectado = True
 
-# plt.figure(figsize=(10, 5))
-# plt.plot(new_time, audio_frames3[1])
-# plt.title(f"Frames of 32ms")
-# plt.xlabel("Time [s]")
-# plt.ylabel("Amplitude")
-# plt.show()
+# Ejemplo de cómo llamar a la función
+path_base = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios"
+procesar_actividad_vocal(voice_activity, audio_frames, path_base)
 
-for i in range(0, len(audio_frames3)):
+for i in range(10):
+    freq, ad = wavfile.read(path_base+f"/{numbers[i]}.wav") 
     plt.figure(figsize=(10, 5))
-    plt.plot(new_time, audio_frames3[i])
-    plt.title(f"Frames of 32ms")
-    plt.xlabel("Time [s]")
-    plt.ylabel("Amplitude")
-plt.show()
-
-
-# plot_signal_with_frames_discrete(audio_frames, frequency_audio, 0.32)
-# plot_signal_with_frames_discrete(audio_frames, frequency_audio, 0.32)
+    plt.plot(ad)
+    plt.title(f"Audio {numbers[i]}")
+    plt.xlabel("Muestras")
+    plt.show()

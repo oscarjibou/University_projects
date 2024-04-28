@@ -176,7 +176,8 @@ def number_count_detector(
 
     return voice
 
-def export_numbers(signal, sample_rate, voice, count, output_path):
+def export_numbers(signal, sample_rate, voice, count=10, output_path=any
+                   ):
     """
     Exports the detected numbers in the signal to individual wav files
 
