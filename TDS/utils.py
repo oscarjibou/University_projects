@@ -232,8 +232,8 @@ def convert_m4a_to_wav(input_path, output_path):
             os.rename(wav_filename, output_path+"/"+wav_filename)
             # Delete the M4A file
             os.remove(audio)
-            
-def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_frames=0.032, overlap=0):
+     
+def detect_voice_activity(audio, frecuency=16000, threshold=0.015, tiempo_frames=0.032, overlap=0):
     '''
     Args:
     audio: numpy array, audio signal
@@ -264,7 +264,7 @@ def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_fra
                 
     return voice_activity, audio_frames
 
-def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_list, numbers_count=10, 
+def process_voice_activity(voice_activity, audio_frames, path_base, numbers_list, numbers_count=10, 
                              silence_before_after = 0.5, error_margin = 2):
     '''
     Fuction to process the voice activity and save the audio frames

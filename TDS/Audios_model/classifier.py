@@ -13,7 +13,7 @@ from vad import EnergyVAD
 from scipy.io import wavfile
 from scipy.io.wavfile import write
 
-from utils import cut_signal_frames, detectar_actividad_vocal, procesar_actividad_vocal, convert_m4a_to_wav
+from utils import cut_signal_frames, convert_m4a_to_wav, detect_voice_activity, process_voice_activity
 
 in_path_audios_m4a = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios_m4a/"
 in_path_audios = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios_wav/"
@@ -22,7 +22,10 @@ out_path_audios = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~Clo
 print("Audio name? ")
 audio_name = input()
 
-convert_m4a_to_wav(in_path_audios_m4a, output_path=in_path_audios)
+try:
+    convert_m4a_to_wav(in_path_audios_m4a, output_path=in_path_audios)
+except:
+    None
     
 frecuency_audio, audio_raw = wavfile.read(in_path_audios + f"{audio_name}.wav") # freqcuency_audio = 44100
 
@@ -50,10 +53,11 @@ audio = np.concatenate((silence, audio, silence))
 #pick the first 10 numbers from the audio signal
 numbers = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"]
 
-# Ejemplo de cómo llamar a la función
 
-voice_activity, audio_frames = detectar_actividad_vocal(audio, frecuency=16000, threshold=0.01)
-procesar_actividad_vocal(voice_activity, audio_frames, out_path_audios, numbers_list=numbers)
+###########################Run the VAD algorithm################################
+
+voice_activity, audio_frames = detect_voice_activity(audio, frecuency=16000, threshold=0.01)
+process_voice_activity(voice_activity, audio_frames, out_path_audios, numbers_list=numbers, silence_before_after=0.5)
 
 #preguntar por la terminal si hacer los siguientes plots
 print("Do you want to make audio plots?")
