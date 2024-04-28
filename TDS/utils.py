@@ -209,20 +209,29 @@ def export_numbers(signal, sample_rate, voice, count=10, output_path=any
 
 def convert_m4a_to_wav(input_path, output_path):  
     '''
-    brew install ffmpeg
+    before using this function, you need to install ffmpeg (brew install ffmpeg)
+    
+    M4A to WAV conversion function and move the files to the output path
+    After DELETE the M4A files
+    
+    args:
+    input_path: string, path to the input audio files
+    output_path: string, path to save the output audio files
     '''
     
     audio_dir = input_path
-    extension_list = ('*.m4a',)  # Filtra solo archivos M4A
+    extension_list = ('*.m4a',)  # Filter only M4A files
 
     os.chdir(audio_dir)
     for extension in extension_list:
         for audio in glob.glob(extension):
             wav_filename = os.path.splitext(os.path.basename(audio))[0] + '.wav'
-            # Cargar el archivo M4A y exportarlo como WAV
+            # Load the M4A file and export it as WAV
             AudioSegment.from_file(audio, format='m4a').export(wav_filename, format='wav')
-            #move the file to the output path
+            # Move the file to the output path
             os.rename(wav_filename, output_path+"/"+wav_filename)
+            # Delete the M4A file
+            os.remove(audio)
             
 def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_frames=0.032, overlap=0):
     '''
@@ -237,11 +246,11 @@ def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_fra
     voice_activity: numpy array, voice activity
     audio_frames: numpy array, audio frames
     '''
-    
+    # Create the VAD object
     vad = EnergyVAD(frecuency,frame_length=60,frame_shift=32, energy_threshold=threshold) 
-
+    # Get the voice activity
     voice_activity = vad(audio)
-
+    # Cut the signal into frames
     audio_frames = cut_signal_frames(audio, frecuency, tiempo_frames, overlap)
     samples = cut_signal_frames([i for i in range(len(audio))], frecuency, tiempo_frames, overlap)
 
@@ -255,7 +264,8 @@ def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_fra
                 
     return voice_activity, audio_frames
 
-def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_list, numbers_count=10, margin=2):
+def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_list, numbers_count=10, 
+                             silence_before_after = 0.5, error_margin = 2):
     '''
     Fuction to process the voice activity and save the audio frames
     
@@ -263,8 +273,10 @@ def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_li
     voice_activity: numpy array, voice activity
     audio_frames: numpy array, audio frames
     path_base: string, path to save the audio frames
+    numbers_list: list, list of number names to be saved
     numbers_count: int, number of audio frames to save
-    margin: int, margin to save the audio frames
+    silence_before_after: float, silence before and after the audio frames
+    error_margin: int, margin of error to detect the audio frames
     
     Returns:
     None
@@ -282,12 +294,18 @@ def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_li
                 detectado = False
                 if index_number <= (numbers_count - 1) :
                     file_path = f"{path_base}/{numbers_list[index_number]}.wav"
-                    write(file_path, 16000, np.concatenate(audio_frames[inicio:final]))
+                    # Concatenate the audio frames into a single audio
+                    audio_no_frames = np.concatenate(audio_frames[inicio:final])
+                    # Add silence before and after the audio
+                    audio_silencio = np.concatenate([np.zeros(int(silence_before_after*16000)) 
+                                                     ,audio_no_frames, np.zeros(int(silence_before_after * 16000))])
+                    # Save the audio file
+                    write(file_path, 16000, audio_silencio)
                     index_number += 1
                 else:
                     break
         elif voice_activity[i] == 1:
-            inicio = i - margin
+            inicio = i - error_margin
             detectado = True
 
 def spectral_centroid_spread(fft_magnitude, sampling_rate):
