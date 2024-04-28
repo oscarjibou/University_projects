@@ -9,14 +9,15 @@ import simpleaudio as sa
 
 sys.path.append("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS")
 
+from vad import EnergyVAD  
 from scipy.io import wavfile
 from scipy.io.wavfile import write, read
 
-from utils import number_count_detector, export_numbers
+from utils import *
 
 path = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios/"
 
-frecuency_audio, audio_raw = wavfile.read(path + "oscar.wav") # freqcuency_audio = 44100
+frecuency_audio, audio_raw = wavfile.read(path + "hh.wav") # freqcuency_audio = 44100
 
 #convert the audio signal to mono
 if len(audio_raw.shape) > 1:

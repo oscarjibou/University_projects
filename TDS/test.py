@@ -12,16 +12,13 @@ sys.path.append("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~Cloud
 
 from vad import EnergyVAD
 from scipy.io import wavfile
-from scipy.io.wavfile import write, read
+from scipy.io.wavfile import write
 
-from utils import number_count_detector, export_numbers, cut_signal_frames
+from utils import cut_signal_frames
 
 path = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios/"
 
-frecuency_audio, audio_raw = wavfile.read(path + "hh.wav") # freqcuency_audio = 44100
-
-#cut the audio to 80000 samples
-# audio_raw = audio_raw[:80000]
+frecuency_audio, audio_raw = wavfile.read(path + "prueba2.wav") # freqcuency_audio = 44100
 
 #convert the audio signal to mono
 if len(audio_raw.shape) > 1:
@@ -48,7 +45,7 @@ audio = np.concatenate((silence, audio, silence))
 print("Maximum amplitude:", np.max(np.abs(audio)))
 
 #pick the first 10 numbers from the audio signal
-vad = EnergyVAD(16000,frame_length=50,frame_shift=32, energy_threshold=0.05) 
+vad = EnergyVAD(16000,frame_length=60,frame_shift=32, energy_threshold=0.015) 
 
 voice_activity = vad(audio)
 
@@ -62,40 +59,37 @@ for i in range(len(voice_activity)):
     else:
         audio_frames[i] = np.zeros(np.shape(audio_frames[i]))
         samples[i] = np.zeros(np.shape(samples[i]))
-        
-##################
-print(type(audio_frames[0]))
+numbers = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"]
 
-numbers = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
-detect = 0
-index_number = 0
+def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_count=10, margin=2):
+    index_number = 0
+    detectado = False
+    inicio, final = 0, 0
 
-for i in range(len(voice_activity)):
-    if voice_activity[i] == 1 and detect == 1:
-        final = i
-        
-    elif detect == 1 and voice_activity[i] == 0:
-        detect = 0
-        write(f"/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios/{numbers[indice_numero]}.wav", 16000, np.concatenate(audio_frames[inicio:final]))
-        index_number += 1  
-            
-    elif detect == 0:
-        if voice_activity[i] == 1:
-            inicio = i - 6
-            detect = 1
-    
-    else:
-        pass
+    for i in range(len(voice_activity)):
+        if detectado:
+            if voice_activity[i] == 1:
+                final = i
+            elif voice_activity[i] == 0:
+                detectado = False
+                if index_number <= (numbers_count - 1) :
+                    file_path = f"{path_base}/{numbers[index_number]}.wav"
+                    write(file_path, 16000, np.concatenate(audio_frames[inicio:final]))
+                    index_number += 1
+                else:
+                    break
+        elif voice_activity[i] == 1:
+            inicio = i - margin
+            detectado = True
 
-print(audio_frames[15:40])
-        
+# Ejemplo de cómo llamar a la función
+path_base = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios"
+procesar_actividad_vocal(voice_activity, audio_frames, path_base)
 
-
-
-# ##################
-
-# #convert the result audio_frames to a numpy array
-# audio_frames = np.concatenate(audio_frames)
-
-# #convert the result audio_frames to file .wav
-# write("/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios/voice_activity.wav", 16000, audio_frames)
+for i in range(10):
+    freq, ad = wavfile.read(path_base+f"/{numbers[i]}.wav") 
+    plt.figure(figsize=(10, 5))
+    plt.plot(ad)
+    plt.title(f"Audio {numbers[i]}")
+    plt.xlabel("Muestras")
+    plt.show()
