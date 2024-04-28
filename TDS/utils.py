@@ -1,11 +1,17 @@
-from matplotlib import pyplot as plt
-from numpy.typing import ArrayLike
+import os
+import sys
 import numpy as np
+import pydub
+import scipy.signal as signal
+import glob
+
+from numpy.typing import ArrayLike
+from matplotlib import pyplot as plt
 from scipy.signal import get_window
 from scipy.io import wavfile
-import scipy.signal as signal
-import sys
 from scipy.io.wavfile import write, read
+from pydub import AudioSegment
+from vad import EnergyVAD
 
 epsilon = sys.float_info.epsilon
 
@@ -200,33 +206,96 @@ def export_numbers(signal, sample_rate, voice, count=10, output_path=any
         start, end = voice_segments[i], voice_segments[i + 1]
         write(f"{output_path}{i//2}.wav", sample_rate, signal[start:end])
 
-#function to convert m4p to wav
-"""
-Convert the audio to mono,
-And normalize the audio, 
-change the frecuency to 16kHz if it is different
-"""
-# def convert_m4p_to_wav(input_path, output_path):
-#     print(input_path)
-#     audio = pydub.AudioSegment.from_file(input_path) # Load the audio file
-#     audio = audio.set_channels(1) # Convert to mono
-#     audio = audio.set_frame_rate(16000)
-#     audio = audio.set_sample_width(2)
-#     audio = audio.set_frame_width(2)
-#     audio = audio.normalize()
-#     audio.export(output_path, format="wav")
+
+def convert_m4a_to_wav(input_path, output_path):  
+    '''
+    brew install ffmpeg
+    '''
     
-# def read_wav_file(file_path):
-#     sample_rate, signal = wavfile.read(file_path)
-#     return signal, sample_rate
+    audio_dir = input_path
+    extension_list = ('*.m4a',)  # Filtra solo archivos M4A
 
-'''
-github link: https://github.com/tyiannak/pyAudioAnalysis/blob/master/pyAudioAnalysis/ShortTermFeatures.py
+    os.chdir(audio_dir)
+    for extension in extension_list:
+        for audio in glob.glob(extension):
+            wav_filename = os.path.splitext(os.path.basename(audio))[0] + '.wav'
+            # Cargar el archivo M4A y exportarlo como WAV
+            AudioSegment.from_file(audio, format='m4a').export(wav_filename, format='wav')
+            #move the file to the output path
+            os.rename(wav_filename, output_path+"/"+wav_filename)
+            
+def detectar_actividad_vocal(audio, frecuency=16000, threshold=0.015, tiempo_frames=0.032, overlap=0):
+    '''
+    Args:
+    audio: numpy array, audio signal
+    frecuency: int, frecuency of the audio signal
+    threshold: float, energy threshold
+    tiempo_frames: float, time of the frames
+    overlap: float, overlap between frames
+    
+    Returns:
+    voice_activity: numpy array, voice activity
+    audio_frames: numpy array, audio frames
+    '''
+    
+    vad = EnergyVAD(frecuency,frame_length=60,frame_shift=32, energy_threshold=threshold) 
 
-functions: spectral_centroid_spread, spectral_flux
-'''
+    voice_activity = vad(audio)
+
+    audio_frames = cut_signal_frames(audio, frecuency, tiempo_frames, overlap)
+    samples = cut_signal_frames([i for i in range(len(audio))], frecuency, tiempo_frames, overlap)
+
+    for i in range(len(voice_activity)):
+        if voice_activity[i] == 1:
+            audio_frames[i] = audio_frames[i]
+            samples[i] = samples[i]
+        else:
+            audio_frames[i] = np.zeros(np.shape(audio_frames[i]))
+            samples[i] = np.zeros(np.shape(samples[i]))
+                
+    return voice_activity, audio_frames
+
+def procesar_actividad_vocal(voice_activity, audio_frames, path_base, numbers_list, numbers_count=10, margin=2):
+    '''
+    Fuction to process the voice activity and save the audio frames
+    
+    Args:
+    voice_activity: numpy array, voice activity
+    audio_frames: numpy array, audio frames
+    path_base: string, path to save the audio frames
+    numbers_count: int, number of audio frames to save
+    margin: int, margin to save the audio frames
+    
+    Returns:
+    None
+    '''
+    
+    index_number = 0
+    detectado = False
+    inicio, final = 0, 0
+
+    for i in range(len(voice_activity)):
+        if detectado:
+            if voice_activity[i] == 1:
+                final = i
+            elif voice_activity[i] == 0:
+                detectado = False
+                if index_number <= (numbers_count - 1) :
+                    file_path = f"{path_base}/{numbers_list[index_number]}.wav"
+                    write(file_path, 16000, np.concatenate(audio_frames[inicio:final]))
+                    index_number += 1
+                else:
+                    break
+        elif voice_activity[i] == 1:
+            inicio = i - margin
+            detectado = True
 
 def spectral_centroid_spread(fft_magnitude, sampling_rate):
+    '''
+    github link: https://github.com/tyiannak/pyAudioAnalysis/blob/master/pyAudioAnalysis/ShortTermFeatures.py
+
+    functions: spectral_centroid_spread, spectral_flux
+    '''
     """
     Computes spectral centroid of frame (given abs(FFT)) and spread of the frame.
     It provides an idea of where the "brightness" or "density" of a sound signal is concentrated. 
