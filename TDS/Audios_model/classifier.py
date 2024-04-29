@@ -81,12 +81,6 @@ if answer == "Y" or answer == "y":
         plt.xlabel("Muestras")
         plt.show()
 else:
-    # for i in range(10):
-    #     freq, ad = wavfile.read(out_path_audios+f"/{numbers[i]}.wav") 
-    #     print(f"Maximum amplitud of Audio {numbers[i]} is: {np.max(np.abs(ad))}")
-    # plt.figure(figsize=(10, 5))
-    # plt.plot(voice_activity)
-    # plt.show()
     print("Goodbye!")
 
 
