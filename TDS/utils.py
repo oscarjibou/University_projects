@@ -307,6 +307,17 @@ def process_voice_activity(voice_activity, audio_frames, path_base, numbers_list
         elif voice_activity[i] == 1:
             inicio = i - error_margin
             detectado = True
+            
+def move_audio_to_final_folder(numbers, file, person, number_record, path_source, path_base):
+
+    #move file 
+
+    
+    
+    
+    
+    
+    return None
 
 def spectral_centroid_spread(fft_magnitude, sampling_rate):
     '''
