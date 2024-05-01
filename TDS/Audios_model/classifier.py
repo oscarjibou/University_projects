@@ -14,11 +14,11 @@ from scipy.io import wavfile
 from scipy.io.wavfile import write
 
 from utils import cut_signal_frames, convert_m4a_to_wav, detect_voice_activity, process_voice_activity
-
-in_path_audios_m4a = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios_m4a/"
-in_path_audios = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/In_audios_wav/"
-out_path_audios = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/Out_audios"
-path_base = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/audios"    
+path = "/Users/oscarjimenezbou/Library/Mobile Documents/com~apple~CloudDocs/Documents/University_projects/TDS/Audios_model/"
+in_path_audios_m4a = path + "In_audios_m4a/"
+in_path_audios = path + "In_audios_wav/"
+out_path_audios = path + "/Out_audios"
+path_base = path + "audios"    
 
 persons = [("Oscar", 1), ("Marta", 2), ("Isabel", 3), ("Abuela", 4), ("Papa", 5)]
 numbers_records = [1, 2, 3, 4]
@@ -62,7 +62,7 @@ audio = np.concatenate((silence, audio, silence))
 
 ###########################Run the VAD algorithm################################
 
-voice_activity, audio_frames = detect_voice_activity(audio, frecuency=16000, threshold=0.015)
+voice_activity, audio_frames = detect_voice_activity(audio, frecuency=16000, threshold=0.01)
 process_voice_activity(voice_activity, audio_frames, out_path_audios, numbers_list=numbers, silence_before_after=0.5)
 
 #preguntar por la terminal si hacer los siguientes plots
@@ -81,14 +81,16 @@ if answer == "Y" or answer == "y":
         plt.xlabel("Muestras")
         plt.show()
 else:
-    print("Goodbye!")
+    None
+    
 
 
 answer = input("Do you want to move the audio to final folder? Y/N: \n")
 
 if answer == "Y" or answer == "y":
     for number in numbers:
-        os.rename(out_path_audios + "/" + number + ".wav", path_base + "/" + number + "/" +f"{number}_{persons[choosen_person-1][1]}_{numbers_records[choosen_version-1]}.wav")
+        os.rename(out_path_audios + "/" + number + ".wav", path_base + "/" + number + "/"           + f"{number}_{persons[choosen_person-1][1]}_{numbers_records[choosen_version-1]}.wav")
+    print("Goodbye!")
 else:
-    None
+    print("Goodbye!")
     
