@@ -384,3 +384,18 @@ def spectral_flux(fft_magnitude, previous_fft_magnitude):
 
     return sp_flux
 
+def spectral_rolloff(signal, c):
+    """Computes spectral roll-off"""
+    energy = np.sum(signal ** 2)
+    fft_length = len(signal)
+    threshold = c * energy
+    # Ffind the spectral rolloff as the frequency position 
+    # where the respective spectral energy is equal to c*totalEnergy
+    cumulative_sum = np.cumsum(signal ** 2) + epsilon
+    a = np.nonzero(cumulative_sum > threshold)[0]
+    if len(a) > 0:
+        sp_rolloff = np.float64(a[0]) / (float(fft_length))
+    else:
+        sp_rolloff = 0.0
+    return sp_rolloff
+
