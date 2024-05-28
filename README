@@ -1,65 +1,142 @@
-alalbiol.tds@gmail.com
-Thursday before 9:00
+Claro, aquí tienes el archivo README.md completo basado en la información proporcionada:
 
------------------------
-Para que no se me olvide:
-Para subir un proyecto ya inicializado con Git a GitHub, necesitas seguir una serie de pasos que te permitirán conectar tu repositorio local con un repositorio remoto en GitHub. Aquí te dejo los comandos esenciales para realizar esta tarea:
+```markdown
+# Proyecto de Machine Learning - Clasificación de Audio
 
-1. **Crea un nuevo repositorio en GitHub**: Ve a [GitHub](https://github.com/) y crea un nuevo repositorio. Durante la creación, GitHub te ofrecerá la opción de inicializar el repositorio con un README, .gitignore, y una licencia. Como tu proyecto ya está inicializado y probablemente ya tenga contenido, no necesitas seleccionar estas opciones. Solo dale un nombre a tu repositorio y créalo.
+Este repositorio contiene un proyecto de Machine Learning enfocado en la clasificación de señales de audio utilizando redes neuronales convolucionales. El proyecto está implementado en Python y hace uso de varias librerías como `torch`, `librosa`, y `numpy`.
 
-2. **Abre tu terminal y navega a tu proyecto local**: Si aún no estás en el directorio de tu proyecto, usa el comando `cd` para navegar a él.
+## Descripción del Proyecto
 
-   ```bash
-   cd ruta/a/tu/proyecto
-   ```
+Este proyecto tiene como objetivo detectar y clasificar segmentos de audio mediante la extracción de características y el uso de modelos de deep learning. El flujo general del proyecto incluye:
 
-3. **Vincula tu repositorio local con el repositorio remoto en GitHub**: Utiliza el comando `git remote add` para agregar un nuevo remoto. Deberás reemplazar `url-del-repositorio` con la URL que te proporciona GitHub para tu nuevo repositorio. Esta URL la encontrarás en la página de tu repositorio en GitHub, bajo las instrucciones para "push an existing repository from the command line".
+1. **Preprocesamiento del Audio**: Lectura, normalización y resampleo de archivos de audio.
+2. **Extracción de Características**: Obtención de espectrogramas a partir de los archivos de audio.
+3. **Construcción del Modelo**: Implementación de una red neuronal convolucional para la clasificación.
+4. **Entrenamiento del Modelo**: Entrenamiento del modelo con datos preprocesados.
+5. **Evaluación y Pruebas**: Evaluación del modelo y pruebas con grabaciones en tiempo real.
 
-   ```bash
-   git remote add origin url-del-repositorio
-   ```
+## Estructura del Proyecto
 
-4. **Sube tu proyecto al repositorio en GitHub**: Primero, asegúrate de haber añadido y confirmado todos tus cambios locales usando `git add` y `git commit`. Luego, utiliza `git push` para subir tu proyecto al repositorio de GitHub.
+- `utils.py`: Contiene funciones auxiliares para el procesamiento de audio.
+- `main.py`: Script principal para ejecutar las etapas del proyecto.
+- `notebooks/`: Directorio que contiene Jupyter notebooks con experimentos y visualizaciones.
+- `data/`: Directorio para almacenar los archivos de audio y datos de entrenamiento.
+- `models/`: Directorio para guardar los modelos entrenados.
 
-   ```bash
-   git push -u origin master
-   ```
+## Requisitos
 
-   Nota: Si estás utilizando la nomenclatura de ramas principal como `main` en lugar de `master` (GitHub cambió el nombre predeterminado de la rama principal a `main` en repositorios nuevos), asegúrate de usar `main` en el comando anterior.
+Para ejecutar este proyecto, necesitarás tener instaladas las siguientes librerías de Python:
 
-**Comandos esenciales de Git para manejar tu proyecto:**
+- `torch`
+- `librosa`
+- `numpy`
+- `pandas`
+- `scipy`
+- `matplotlib`
+- `tqdm`
+- `pytest`
 
-- **`git init`**: Inicializa un nuevo repositorio de Git local.
-- **`git status`**: Muestra el estado del repositorio local, incluyendo cambios que no han sido confirmados.
-- **`git add .`** o **`git add nombre-del-archivo`**: Añade archivos al área de preparación para ser confirmados. Usar `.` añade todos los archivos modificados.
-- **`git commit -m "mensaje del commit"`**: Confirma los cambios añadidos al área de preparación con un mensaje descriptivo.
-- **`git push`**: Sube los cambios confirmados al repositorio remoto.
-- **`git pull`**: Descarga los cambios más recientes del repositorio remoto y los integra con el repositorio local.
-- **`git clone url-del-repositorio`**: Clona un repositorio remoto en tu máquina local.
-- **`git branch`**: Lista las ramas locales en tu repositorio. Con opciones adicionales, puedes crear o eliminar ramas.
-- **`git checkout nombre-de-la-rama`**: Cambia a otra rama existente en tu repositorio.
-- **`git merge nombre-de-la-rama`**: Fusiona los cambios de la rama especificada a la rama actual.
+Puedes instalar todos los requisitos utilizando el archivo `requirements.txt` proporcionado:
 
-Estos comandos forman la base para la mayoría de las operaciones que realizarás con Git y GitHub en tu proyecto.
------------------------------------------------------------
-Para crear un archivo requirements.txt con todas las bibliotecas que tu proyecto Python necesita, primero debes tener un entorno virtual activo donde hayas instalado todas las bibliotecas necesarias. Luego, puedes usar el comando pip freeze para generar el archivo requirements.txt. Aquí están los pasos en pseudocódigo:
+```bash
+pip install -r requirements.txt
+```
 
-Asegúrate de que tu entorno virtual está activo.
-Ejecuta el comando pip freeze > requirements.txt en la terminal.
-Aquí está el comando en un bloque de código:
+## Uso del Proyecto
 
-'pip freeze > requirements.txt'
+### 1. Preprocesamiento del Audio
 
-Este comando creará un archivo requirements.txt en tu directorio actual con todas las bibliotecas instaladas en tu entorno virtual.
+El primer paso es preprocesar los archivos de audio. Esto incluye la normalización y el resampleo de los archivos para asegurarse de que todos tengan la misma frecuencia de muestreo.
 
+```python
+from utils import preprocess_audio
 
------------------------------------------------------------
-Si tienes un archivo requirements.txt y necesitas instalar todas las bibliotecas listadas en él, puedes hacerlo utilizando el comando pip install -r. Aquí están los pasos en pseudocódigo:
+audio_path = 'ruta/al/audio.wav'
+audio_data, sample_rate = preprocess_audio(audio_path)
+```
 
-Asegúrate de que tu entorno virtual está activo.
-Ejecuta el comando pip install -r requirements.txt en la terminal.
-Aquí está el comando en un bloque de código:
+### 2. Extracción de Espectrogramas
 
-'pip install -r requirements.txt'
+Se extraen espectrogramas a partir de los archivos de audio para ser utilizados como características de entrada al modelo.
 
-Este comando instalará todas las bibliotecas listadas en tu archivo requirements.txt en tu entorno virtual.
+```python
+from utils import extract_spectrogram
+
+spectrogram = extract_spectrogram(audio_data, sample_rate)
+```
+
+### 3. Construcción del Modelo
+
+Se define una red neuronal convolucional utilizando PyTorch. El modelo se puede personalizar ajustando los hiperparámetros.
+
+```python
+import torch
+from torch import nn
+
+class AudioClassifier(nn.Module):
+    def __init__(self, num_classes):
+        super(AudioClassifier, self).__init__()
+        # Definición de las capas del modelo
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(16)
+        self.relu = nn.ReLU()
+        self.pool = nn.MaxPool2d(2)
+        self.fc = nn.Linear(16*16*16, num_classes)
+
+    def forward(self, x):
+        x = self.pool(self.relu(self.bn1(self.conv1(x))))
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+```
+
+### 4. Entrenamiento del Modelo
+
+Se entrena el modelo utilizando un conjunto de datos preprocesados.
+
+```python
+from torch.utils.data import DataLoader, TensorDataset
+
+# Crear dataset y dataloader
+train_dataset = TensorDataset(spectrograms, labels)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+# Definir el loop de entrenamiento
+def train(model, train_loader, criterion, optimizer, num_epochs):
+    for epoch in range(num_epochs):
+        for data, target in train_loader:
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
+            optimizer.step()
+
+# Inicializar y entrenar el modelo
+model = AudioClassifier(num_classes=10)
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+train(model, train_loader, criterion, optimizer, num_epochs=10)
+```
+
+### 5. Evaluación y Pruebas
+
+Una vez entrenado el modelo, se puede evaluar su rendimiento y realizar pruebas con grabaciones en tiempo real.
+
+```python
+# Evaluar el modelo en un conjunto de datos de prueba
+# ...
+
+# Realizar pruebas con grabaciones en tiempo real
+# ...
+```
+
+## Contribuciones
+
+Las contribuciones a este proyecto son bienvenidas. Si encuentras algún error o tienes sugerencias para nuevas funcionalidades, por favor abre un issue o envía un pull request.
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+```
+
+Puedes copiar este contenido en un archivo llamado `README.md` y añadirlo a tu repositorio. Esto proporcionará una guía completa para cualquier persona que desee entender y utilizar tu proyecto de Machine Learning.
