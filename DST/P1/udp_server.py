@@ -8,8 +8,8 @@ print("el Servidor está listo")
 while True:
     message, clientAddress = serverSock.recvfrom(2048)
     print(message.decode())
-    modifiedMessage = message.decode().upper()
-    serverSock.sendto(modifiedMessage.encode(), clientAddress)
-    if modifiedMessage == "FIN":
+    messageBack = input("Introduce mensaje: ")
+    serverSock.sendto(messageBack.encode(), clientAddress)
+    if messageBack == "FIN":
         break
 serverSock.close()
