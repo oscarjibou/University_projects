@@ -1,5 +1,3 @@
-Claro, aquí tienes el archivo README.md completo basado en la información proporcionada:
-
 ```markdown
 # Proyecto de Machine Learning - Clasificación de Audio
 
@@ -121,22 +119,3 @@ train(model, train_loader, criterion, optimizer, num_epochs=10)
 ### 5. Evaluación y Pruebas
 
 Una vez entrenado el modelo, se puede evaluar su rendimiento y realizar pruebas con grabaciones en tiempo real.
-
-```python
-# Evaluar el modelo en un conjunto de datos de prueba
-# ...
-
-# Realizar pruebas con grabaciones en tiempo real
-# ...
-```
-
-## Contribuciones
-
-Las contribuciones a este proyecto son bienvenidas. Si encuentras algún error o tienes sugerencias para nuevas funcionalidades, por favor abre un issue o envía un pull request.
-
-## Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
-```
-
-Puedes copiar este contenido en un archivo llamado `README.md` y añadirlo a tu repositorio. Esto proporcionará una guía completa para cualquier persona que desee entender y utilizar tu proyecto de Machine Learning.
